@@ -1,0 +1,7 @@
+net-tools
+ntp
+hdparm
+smartmontools
+dnsutils
+libpam-systemd
+lm-sensors

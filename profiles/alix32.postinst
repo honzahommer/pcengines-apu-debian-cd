@@ -1,0 +1,43 @@
+#!/bin/sh
+
+cat >/lib/systemd/system/alix-leds.service <<EOF
+[Unit]
+Description=ALIX LEDS
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/alix-leds.sh start
+ExecStop=/usr/local/bin/alix-leds.sh stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat >/usr/local/bin/alix-leds.sh <<EOF
+#!/bin/bash
+
+start() {
+    echo 1 > /sys/class/leds/alix\:1/brightness
+    echo disk-activity > /sys/class/leds/alix\:2/trigger
+    #echo netdev > /sys/class/leds/alix\:3/trigger
+    #echo enp0s9 > /sys/class/leds/alix\:3/device_name
+    #echo "link rx tx" > /sys/class/leds/alix\:3/mode
+}
+
+stop() {
+    echo 0 > /sys/class/leds/alix\:1/brightness
+    echo none > /sys/class/leds/alix\:1/trigger
+    echo none > /sys/class/leds/alix\:2/trigger
+    echo none > /sys/class/leds/alix\:3/trigger
+}
+
+case $1 in
+    start|stop) "$1" ;;
+esac
+EOF
+
+chmod 755 /usr/local/bin/alix-leds.sh
+
+#systemctl enable alix-leds
+#systemctl start alix-leds
